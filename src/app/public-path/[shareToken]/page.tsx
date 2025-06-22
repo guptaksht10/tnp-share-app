@@ -36,6 +36,7 @@ export default function Page() {
                 setError("Check if the share token is valid or expired");
                 console.log("Check if the share token is valid or expired");
             }
+            console.log(error);
 
             setLoading(false);
         }

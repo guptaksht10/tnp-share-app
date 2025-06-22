@@ -10,6 +10,7 @@ import { getShareToken } from "@/lib/api";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from "next/navigation";
 import { ShareTokenResponse } from "@/types/api";
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 
 interface AdminPageState {
     openModal: boolean;
@@ -149,20 +150,28 @@ export default function AdminPage() {
                                           </TableCell>
                                       </TableRow>
                                       <TableRow>
-                                          <TableCell>
-                                          <div className="text-blue-600 text-sm">
+                                      <TableCell>
+                                          <div className="text-blue-600 text-sm flex items-center gap-2">
                                               Share URL: 
-                                              <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
+                                              <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full break-all">
                                                   {state.shareUrl}
                                               </span>
+                                              <IconButton
+                                                  onClick={() => window.open(state.shareUrl, '_blank')}
+                                                  color="secondary"
+                                                  aria-label="Go to share URL"
+                                              >
+                                                  <OpenInNewIcon />
+                                              </IconButton>
                                           </div>
-                                          </TableCell>
-                                          <TableCell>
+                                      </TableCell>
+                                      <TableCell>
                                           <IconButton onClick={() => handleCopy(state.shareUrl, 'url')} color="primary">
                                               {state.copiedField === 'url' ? <CheckIcon color="success" /> : <ContentCopyIcon />}
                                           </IconButton>
-                                          </TableCell>
-                                      </TableRow>
+                                      </TableCell>
+                                  </TableRow>
+
                                   </TableBody>
                               </Table>
                           </TableContainer>
