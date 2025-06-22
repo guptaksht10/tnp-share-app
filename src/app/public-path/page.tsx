@@ -1,16 +1,21 @@
 "use client"
 
-import { useRouter } from "next/navigation";
-import { use, useState } from "react";
+import { useState } from "react";
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import Navbar from "@/components/navbar";
 import { getStudentsData } from "@/lib/api";
 import { useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import CircularProgress from '@mui/material/CircularProgress';
+import { StudentDataResponse } from "@/types/api";
 
 export default function Page() {
-    const router = useRouter();
+    interface studentDetails {
+        first_name: string;
+        last_name: string;
+        roll_no: string;
+        email: string;
+    }
     const searchParams = useSearchParams();
     const shareToken = searchParams.get("shareToken");
     const [data, setData] = useState([]);
@@ -25,7 +30,7 @@ export default function Page() {
                return;
            }
            setLoading(true);
-           const result : any = await getStudentsData(shareToken);
+           const result : StudentDataResponse = await getStudentsData(shareToken);
            if (result.success) {
                setData(result.studentData);
                setLoading(false);
@@ -36,9 +41,10 @@ export default function Page() {
                setError("Check if the share Token is valid or expired");
                alert("Check if the share Token is valid or expired");
            }
+           console.log(Error);
        }
        fetchData();
-    }, [shareToken]);
+    }, []);
     return (
         <>
         <Navbar />
@@ -71,7 +77,7 @@ export default function Page() {
                                                     </TableCell>
                                                 </TableRow>
                                             )}
-                                            {data && data.map((item: any) => (
+                                            {data && data.map((item: studentDetails) => (
                                                 <TableRow key={item.roll_no}>
                                                     <TableCell>{item.first_name}</TableCell>
                                                     <TableCell>{item.last_name}</TableCell>

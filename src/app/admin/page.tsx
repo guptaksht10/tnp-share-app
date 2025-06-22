@@ -9,58 +9,74 @@ import CheckIcon from '@mui/icons-material/Check';
 import { getShareToken } from "@/lib/api";
 import CircularProgress from '@mui/material/CircularProgress';
 import { useRouter } from "next/navigation";
+import { ShareTokenResponse } from "@/types/api";
+
+interface AdminPageState {
+    openModal: boolean;
+    shareToken: string;
+    shareUrl: string;
+    copiedField: 'token' | 'url' | '';
+    loading: boolean;
+    isLoggedIn: boolean;
+}
 
 export default function AdminPage() {
     const router = useRouter();
-    const [openModal, setOpenModal] = useState(false);
-    const [shareToken, setShareToken] = useState('');
-    const [shareUrl, setShareUrl] = useState('');
-    const [copiedField, setCopiedField] = useState('');
-    const [loading, setLoading] = useState(false);
-    const [isLoggedIn, setIsLoggedIn] = useState(false);
+    const [state, setState] = useState<AdminPageState>({
+        openModal: false,
+        shareToken: '',
+        shareUrl: '',
+        copiedField: '',
+        loading: false,
+        isLoggedIn: false
+    });
 
     useEffect(() => {
         const loginStatus = localStorage.getItem("isLoggedIn");
-        setIsLoggedIn(loginStatus === "true");
+        setState(prev => ({ ...prev, isLoggedIn: loginStatus === "true" }));
     
-        if (!isLoggedIn) {
-          router.push("/sign-in");
-          alert("Not a authorized user");
-          return;
+        if (!loginStatus || loginStatus !== "true") {
+            router.push("/sign-in");
+            alert("Not a authorized user");
+            return;
         }
-    }, [router]);
+    }, []);
 
-    const handleGenerateShareToken = async () => {
-        setOpenModal(false);
-        setLoading(true);
+    const handleGenerateShareToken = async (): Promise<void> => {
+        setState(prev => ({ ...prev, openModal: false, loading: true }));
         const accessToken = localStorage.getItem("accessToken") || "";
-        const result : any = await getShareToken(accessToken);
+        const result: ShareTokenResponse = await getShareToken(accessToken);
+
         if (result.success) {
             const shareToken = result.shareToken;
             const shareUrl = `http://localhost:3000/public-path?shareToken=${shareToken}`;
 
-            setShareToken(shareToken);
-            setShareUrl(shareUrl);
-            setOpenModal(true);
-
-            setLoading(false);
+            setState(prev => ({ 
+                ...prev,
+                shareToken: shareToken!,
+                shareUrl,
+                openModal: true,
+                loading: false
+            }));
             return;
         }
-        setLoading(false);
+
+        setState(prev => ({ ...prev, loading: false }));
         alert(result.error);
-        if(result.error === 'Invalid credentials') {
+        if (result.error === 'Invalid credentials') {
             localStorage.removeItem("isLoggedIn");
             localStorage.removeItem("accessToken");
             localStorage.removeItem("refreshToken");
+            alert('Please login again!')
             router.push("/sign-in");
         }
-    }
+    };
 
-    const handleCopy = (text: string, type: 'token' | 'url') => {
+    const handleCopy = (text: string, type: 'token' | 'url'): void => {
         navigator.clipboard.writeText(text);
-        setCopiedField(type);
-        setTimeout(() => setCopiedField(''), 2000); 
-      };
+        setState(prev => ({ ...prev, copiedField: type }));
+        setTimeout(() => setState(prev => ({ ...prev, copiedField: '' })), 2000);
+    };
 
     return (
         <div>
@@ -84,21 +100,20 @@ export default function AdminPage() {
                         Generate Share Token
                     </Button>
                 </div>
-                {loading && (
+                {state.loading && (
                     <div className="flex justify-center items-center mt-8">
                         <CircularProgress />
                     </div>
                 )}
-                {openModal && (
+                {state.openModal && (
                     <div className="flex justify-center items-center mt-8">
                         <Paper elevation={4} sx={{ padding: 4, width: '80%', borderRadius: 2 }}>
                             <div className="flex justify-between items-center mb-4">
                                 <Typography variant="h6">Generated Tokens</Typography>
-                                <IconButton onClick={() => setOpenModal(false)}>
+                                <IconButton onClick={() => setState(prev => ({ ...prev, openModal: false }))}>
                                     <CloseIcon />
                                 </IconButton>
                             </div>
-
                             <TableContainer>
                                 <Table>
                                     <TableHead>
@@ -113,14 +128,14 @@ export default function AdminPage() {
                                             <div className="text-blue-600 text-sm">
                                                 Share Token:  
                                                 <span className="p-8 bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-                                                    {shareToken}
+                                                    {state.shareToken}
                                                 </span>
-                                            </div>
+                                                </div>
                                             </TableCell>
                                             <TableCell>
-                                            <IconButton onClick={() => handleCopy(shareToken, 'token')} color="primary">
-                                                {copiedField === 'token' ? <CheckIcon color="success" /> : <ContentCopyIcon />}
-                                            </IconButton>
+                                            <IconButton onClick={() => handleCopy(state.shareToken, 'token')} color="primary">
+                                                {state.copiedField === 'token' ? <CheckIcon color="success" /> : <ContentCopyIcon />}
+                                                    </IconButton>
                                             </TableCell>
                                         </TableRow>
                                         <TableRow>
@@ -128,18 +143,17 @@ export default function AdminPage() {
                                             <div className="text-blue-600 text-sm">
                                                 Share URL: 
                                                 <span className="bg-green-100 text-green-800 text-sm font-medium px-3 py-1 rounded-full">
-                                                    {shareUrl}
+                                                    {state.shareUrl}
                                                 </span>
                                             </div>
                                             </TableCell>
                                             <TableCell>
-                                            <IconButton onClick={() => handleCopy(shareUrl, 'url')} color="primary">
-                                                {copiedField === 'url' ? <CheckIcon color="success" /> : <ContentCopyIcon />}
+                                            <IconButton onClick={() => handleCopy(state.shareUrl, 'url')} color="primary">
+                                                {state.copiedField === 'url' ? <CheckIcon color="success" /> : <ContentCopyIcon />}
                                             </IconButton>
                                             </TableCell>
                                         </TableRow>
-                                        </TableBody>
-
+                                    </TableBody>
                                 </Table>
                             </TableContainer>
                         </Paper>

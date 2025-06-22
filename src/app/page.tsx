@@ -18,7 +18,7 @@ export default function Page() {
     } else {
       router.push("/sign-in");
     }
-  }, [router]); 
+  }, [isLoggedIn]); 
 
   return (
     <>

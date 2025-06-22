@@ -1,6 +1,6 @@
 "use client";
 
-import { Avatar, Button, Typography } from "@mui/material";
+import { Avatar, Button } from "@mui/material";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 

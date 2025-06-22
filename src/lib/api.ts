@@ -25,6 +25,7 @@ export const signIn = async (body: SignInBody) => {
 
         return data;
     } catch (error) {
+        console.error('Login error:', error);
         return { success: false, error: 'An error occurred during login', data: null };
     }
 }
@@ -52,6 +53,7 @@ export const getShareToken = async (accessToken: string) => {
         return data;
 
     } catch (error) {
+        console.error('Share token error:', error);
         return { success: false, error: 'An error occurred during generating share token', data: null };
     }
 }
@@ -81,6 +83,7 @@ export const getStudentsData = async (shareToken: string) => {
         return result;
 
     } catch (error) {
+        console.error('Students data error:', error);
         return { success: false, error: 'An error occurred during fetching students data', data: null };
     }
 }
