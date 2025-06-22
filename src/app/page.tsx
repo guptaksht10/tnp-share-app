@@ -55,7 +55,7 @@ export default function AdminPage() {
 
         if (result.success) {
             const shareToken = result.shareToken;
-            const shareUrl = `http://localhost:3000/public-path/${shareToken}`;
+            const shareUrl = `https://tnp-share-app-llb8.vercel.app/public-path/${shareToken}`;
 
             setState(prev => ({ 
                 ...prev,
