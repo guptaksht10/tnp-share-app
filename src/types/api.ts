@@ -11,8 +11,15 @@ export interface ShareTokenResponse {
     error?: string;
 }
 
+export interface studentDetails {
+    first_name: string;
+    last_name: string;
+    roll_no: string;
+    email: string;
+}
+
 export interface StudentDataResponse {
     success: boolean;
-    studentData?: any;
+    studentData?: studentDetails[];
     error?: string;
 }

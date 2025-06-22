@@ -39,7 +39,7 @@ export default function Page() {
             localStorage.setItem("isLoggedIn", "true");
             localStorage.setItem("accessToken", accessToken!);
             localStorage.setItem("refreshToken", refreshToken!);
-            router.push('/admin');
+            router.push('/');
             return;
         }
 

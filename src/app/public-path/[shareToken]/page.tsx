@@ -5,20 +5,15 @@ import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow
 import Navbar from "@/components/navbar";
 import { getStudentsData } from "@/lib/api";
 import { useEffect } from "react";
-import { useSearchParams } from "next/navigation";
 import CircularProgress from '@mui/material/CircularProgress';
 import { StudentDataResponse } from "@/types/api";
+import { studentDetails } from "@/types/api";
+import { useParams } from "next/navigation";
 
 export default function Page() {
-    interface studentDetails {
-        first_name: string;
-        last_name: string;
-        roll_no: string;
-        email: string;
-    }
-    const searchParams = useSearchParams();
-    const shareToken = searchParams.get("shareToken");
-    const [data, setData] = useState([]);
+    const Params = useParams();
+    const shareToken = Params.shareToken;
+    const [data, setData] = useState<studentDetails[]>([]);
     const [loading, setLoading] = useState(true);
     const [Error, setError] = useState('');
 
@@ -29,10 +24,17 @@ export default function Page() {
                alert("No share token provided");
                return;
            }
+           // Ensure shareToken is a string
+           const token = Array.isArray(shareToken) ? shareToken[0] : shareToken;
+           if (!token) {
+               setError("Invalid share token format");
+               alert("Invalid share token format");
+               return;
+           }
            setLoading(true);
-           const result : StudentDataResponse = await getStudentsData(shareToken);
+           const result : StudentDataResponse = await getStudentsData(token);
            if (result.success) {
-               setData(result.studentData);
+               setData(result.studentData || []);
                setLoading(false);
                return;
            }
