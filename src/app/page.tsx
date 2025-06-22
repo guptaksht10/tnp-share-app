@@ -39,7 +39,7 @@ export default function AdminPage() {
     
         if (!loginStatus || loginStatus !== "true") {
             router.push("/sign-in");
-            alert("Not a authorized user");
+            alert("User is not authorized, Redirecting to Login !");
             setState(prev => ({ ...prev, loading: false }));
             setPageLoading(false);
             return;
