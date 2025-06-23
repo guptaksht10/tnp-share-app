@@ -2,7 +2,7 @@
 - password: admin
 
 ## Overview
-This is a frontend application built for the Training & Placement Department's secure data sharing system. It allows administrators to generate token-based shareable links that display selected student data in a public, read-only view.
+This is a frontend application built that secure data sharing system. It allows administrators to generate token-based shareable links that display selected student data in a public, read-only view.
 
 ## Area	Strategy / Tool
 - Auth (admin only)	-> localStorage, signIn() 
